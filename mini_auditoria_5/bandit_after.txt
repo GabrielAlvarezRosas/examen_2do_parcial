@@ -1,4 +1,4 @@
-Run started:2026-01-05 22:39:28.752452+00:00
+Run started:2026-01-09 02:16:27.295883+00:00
 
 Test results:
 >> Issue: [B404:blacklist] Consider possible security implications associated with the subprocess module.
@@ -6,7 +6,7 @@ Test results:
    CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
    More Info: https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_imports.html#b404-import-subprocess
    Location: .\app.py:3:0
-2	import hashlib
+2	import bcrypt
 3	import subprocess
 4	import json
 
@@ -21,16 +21,6 @@ Test results:
 12	 
 
 --------------------------------------------------
->> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
-   Severity: High   Confidence: High
-   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
-   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b324_hashlib.html
-   Location: .\app.py:21:17
-20		# ❌ Hallazgo típico: hashing inseguro para contraseñas (MD5)
-21		password_hash = hashlib.md5(password.encode("utf-8")).hexdigest()
-22	 
-
---------------------------------------------------
 >> Issue: [B307:blacklist] Use of possibly insecure function - consider using safer ast.literal_eval.
    Severity: Medium   Confidence: High
    CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
@@ -41,48 +31,58 @@ Test results:
 27	 
 
 --------------------------------------------------
->> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
-   Severity: High   Confidence: High
+>> Issue: [B607:start_process_with_partial_path] Starting a process with a partial executable path
+   Severity: Low   Confidence: High
    CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
-   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b602_subprocess_popen_with_shell_equals_true.html
-   Location: .\app.py:31:15
-30		ping_cmd = f"ping -c 1 {host}"
-31		ping_output = subprocess.check_output(ping_cmd, shell=True, text=True)
-32	 
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b607_start_process_with_partial_path.html
+   Location: .\app.py:30:15
+29		host = data.get("host_to_ping", "127.0.0.1")
+30		ping_output = subprocess.check_output(["ping", "-c", "1", host], text=True)
+31	 
+
+--------------------------------------------------
+>> Issue: [B603:subprocess_without_shell_equals_true] subprocess call - check for execution of untrusted input.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b603_subprocess_without_shell_equals_true.html
+   Location: .\app.py:30:15
+29		host = data.get("host_to_ping", "127.0.0.1")
+30		ping_output = subprocess.check_output(["ping", "-c", "1", host], text=True)
+31	 
 
 --------------------------------------------------
 >> Issue: [B501:request_with_no_cert_validation] Call to requests with verify=False disabling SSL certificate checks, security issue.
    Severity: High   Confidence: High
    CWE: CWE-295 (https://cwe.mitre.org/data/definitions/295.html)
    More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b501_request_with_no_cert_validation.html
-   Location: .\app.py:35:5
-34		profile_url = data.get("profile_url", "https://example.com")
-35		r = requests.get(profile_url, headers={"Authorization": f"Bearer {API_TOKEN}"}, verify=False)
-36	 
+   Location: .\app.py:34:5
+33		profile_url = data.get("profile_url", "https://example.com")
+34		r = requests.get(profile_url, headers={"Authorization": f"Bearer {API_TOKEN}"}, verify=False)
+35	 
 
 --------------------------------------------------
 >> Issue: [B113:request_without_timeout] Call to requests without timeout
    Severity: Medium   Confidence: Low
    CWE: CWE-400 (https://cwe.mitre.org/data/definitions/400.html)
    More Info: https://bandit.readthedocs.io/en/1.9.2/plugins/b113_request_without_timeout.html
-   Location: .\app.py:35:5
-34		profile_url = data.get("profile_url", "https://example.com")
-35		r = requests.get(profile_url, headers={"Authorization": f"Bearer {API_TOKEN}"}, verify=False)
-36	 
+   Location: .\app.py:34:5
+33		profile_url = data.get("profile_url", "https://example.com")
+34		r = requests.get(profile_url, headers={"Authorization": f"Bearer {API_TOKEN}"}, verify=False)
+35	 
 
 --------------------------------------------------
 
 Code scanned:
-	Total lines of code: 28
+	Total lines of code: 27
 	Total lines skipped (#nosec): 0
 	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
 
 Run metrics:
 	Total issues (by severity):
 		Undefined: 0
-		Low: 2
+		Low: 4
 		Medium: 2
-		High: 3
+		High: 1
 	Total issues (by confidence):
 		Undefined: 0
 		Low: 1
