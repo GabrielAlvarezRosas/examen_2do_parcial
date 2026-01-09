@@ -3,6 +3,9 @@ import bcrypt
 import subprocess
 import json
 import os
+import shutil
+import platform
+import re
 import requests
  
 app = Flask(__name__)
@@ -25,9 +28,20 @@ def login():
 	extra_filters_raw = data.get("extra_filters", "{}")
 	extra_filters = eval(extra_filters_raw)  # INSEGURO
  
-	# ✓ Inyección de comando prevenida: sin shell=True y argumentos como lista
+	# ✓ Inyección de comando prevenida: resolve full path to `ping` and use args list
 	host = data.get("host_to_ping", "127.0.0.1")
-	ping_output = subprocess.check_output(["ping", "-c", "1", host], text=True)
+	# Basic validation: allow only letters, numbers, dot and hyphen
+	if not re.match(r'^[A-Za-z0-9.\-]+$', host):
+		host = "127.0.0.1"
+
+	ping_cmd = "ping"
+	ping_path = shutil.which(ping_cmd)
+	if not ping_path:
+		raise RuntimeError("'ping' executable not found on PATH")
+
+	# Use platform-specific count flag: Windows uses -n, others use -c
+	count_flag = "-n" if platform.system().lower().startswith("win") else "-c"
+	ping_output = subprocess.check_output([ping_path, count_flag, "1", host], text=True)
  
 	# ❌ Hallazgo típico: deshabilitar verificación TLS
 	profile_url = data.get("profile_url", "https://example.com")
