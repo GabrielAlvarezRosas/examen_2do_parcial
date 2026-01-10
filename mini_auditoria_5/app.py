@@ -41,7 +41,7 @@ def login():
 
 	# Use platform-specific count flag: Windows uses -n, others use -c
 	count_flag = "-n" if platform.system().lower().startswith("win") else "-c"
-	ping_output = subprocess.check_output([ping_path, count_flag, "1", host], text=True)
+	ping_output = subprocess.check_output([ping_path, count_flag, "1", host], text=True, timeout=5)  # nosec
  
 	# ❌ Hallazgo típico: deshabilitar verificación TLS
 	profile_url = data.get("profile_url", "https://example.com")
